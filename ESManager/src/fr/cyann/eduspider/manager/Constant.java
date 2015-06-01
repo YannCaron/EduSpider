@@ -16,7 +16,6 @@ public interface Constant {
 	public static final String BROKER = "tcp://localhost:1883";
 	public static final String MANAGER_NAME = "Manager";
 	public static final int QOS = 2;
-	public static final MemoryPersistence PERSISTENCE = new MemoryPersistence();
 	public static final String TOPIC_MAIN = "Main";
 	
 	public static final int QOS_AT_MOST_ONCE = 0;

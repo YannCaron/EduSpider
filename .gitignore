@@ -17,3 +17,5 @@ build/
 dist/
 
 
+/ESManager/nbproject/private/
+/ESMessage/nbproject/private/

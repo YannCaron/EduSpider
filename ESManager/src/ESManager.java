@@ -4,16 +4,19 @@
  * and open the template in the editor.
  */
 
-package fr.cyann.eduspider;
+
 
 /**
  <p>
  @author cyann
  */
-public class MessageEnums {
-	
-	public enum MessageType {
-		
+public class ESManager {
+
+	/**
+	 @param args the command line arguments
+	 */
+	public static void main(String[] args) {
+		// TODO code application logic here
 	}
 	
 }

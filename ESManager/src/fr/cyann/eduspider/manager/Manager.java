@@ -5,6 +5,7 @@
  */
 package fr.cyann.eduspider.manager;
 
+import fr.cyann.eduspider.message.MessageParser;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
@@ -13,13 +14,14 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
-public class Manager implements Runnable, MqttCallback, Constant {
+public class Manager extends Thread implements MqttCallback, Constant {
 
 	@Override
 	public synchronized void run() {
 		try {
-			MqttClient mqtt = new MqttClient(BROKER, MANAGER_NAME, PERSISTENCE);
+			MqttClient mqtt = new MqttClient(BROKER, MANAGER_NAME, new MemoryPersistence());
 			MqttConnectOptions connOpts = new MqttConnectOptions();
 			connOpts.setCleanSession(true);
 
@@ -49,19 +51,21 @@ public class Manager implements Runnable, MqttCallback, Constant {
 	@Override
 	public void messageArrived(String topic, MqttMessage message) throws Exception {
 		System.out.println("MANAGER Message received " + topic + " " + message.toString());
+		
+		MessageParser parser = MessageParser.getInstance();
+		parser.setPayload(message.getPayload());
+		
+		while (parser.readNext()) {
+			System.out.println("MANAGER Message type: " + parser.getType().name());
+			System.out.println("MANAGER Message length: " + parser.getLength());
+			System.out.println("MANAGER Message value: " + parser.getValue());
+		}
+		
 	}
 
 	@Override
 	public void deliveryComplete(IMqttDeliveryToken token) {
 		System.out.println("MANAGER Delivery complete " + token.toString());
-	}
-
-	public static void main(String[] args) {
-
-		Manager manager = new Manager();
-		Thread mThread = new Thread(manager);
-		mThread.start();
-
 	}
 
 }
