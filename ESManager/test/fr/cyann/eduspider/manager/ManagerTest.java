@@ -8,6 +8,7 @@ package fr.cyann.eduspider.manager;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -16,8 +17,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- <p>
- @author cyann
+ * <p>
+ * @author cyann
  */
 public class ManagerTest implements Constant {
 
@@ -40,11 +41,11 @@ public class ManagerTest implements Constant {
 	}
 
 	@After
-	public void tearDown() {
+	public void tearDown() throws InterruptedException {
 	}
 
 	@Test
-	public void test1() throws MqttException {
+	public void test1() throws MqttException, InterruptedException {
 		String broker = "tcp://localhost:1883";
 		String topic = "Main";
 		MqttClient sampleClient = new MqttClient(broker, "spider", new MemoryPersistence());
@@ -53,6 +54,17 @@ public class ManagerTest implements Constant {
 		System.out.println("EMITTER Connecting to broker: " + broker);
 		sampleClient.connect(connOpts);
 		System.out.println("EMITTER Connected");
+
+		StringBuilder content = new StringBuilder();
+		content.append(0x01);
+		content.append(4);
+		content.append(5471);
+
+		/*int[] content = new int[] {
+		 0x01, 0x04, 0x00, 0x00, 0x05, 0xff
+		 };*/
+		sampleClient.publish(topic, content.toString().getBytes(), 2, true);
+
 	}
 
 }

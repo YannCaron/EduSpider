@@ -8,8 +8,8 @@ package fr.cyann.eduspider.message;
 import fr.cyann.eduspider.message.MessageEnums.MessageType;
 
 /**
- <p>
- @author cyann
+ * <p>
+ * @author cyann
  */
 public class MessageParser {
 
@@ -40,16 +40,21 @@ public class MessageParser {
 	short length;
 	byte[] value;
 
-	public boolean readNext() {
-		type = MessageType.values()[payload[cursor]];
-		length = (short) (((payload[cursor + 1] & 0xff) << 8) | (payload[cursor + 2] & 0xff));
+	public void readNext() {
+		type = MessageType.ValueOf(payload[cursor]);
+		length = (short) (((payload[cursor + 1] & 0xff << 8)) | (payload[cursor + 2] & 0xff));
 		value = new byte[length];
+
+		if (length + 3 > payload.length) {
+			throw new RuntimeException(String.format("Cannot parse message shorter (%d) than length (%d)", payload.length, length));
+		}
 		System.arraycopy(payload, cursor + 3, value, 0, length);
 
-		return hasNext();
+		cursor += length + 3;
 	}
 
 	public MessageType getType() {
+		// data convertion
 		return type;
 	}
 
@@ -59,6 +64,13 @@ public class MessageParser {
 
 	public byte[] getValue() {
 		return value;
+	}
+
+	public int getIntegerValue() {
+		return (value[0] << 24) & 0xff000000 |
+				(value[1] << 16) & 0x00ff0000 |
+				(value[2] << 8) & 0x0000ff00 |
+				(value[3]) & 0x000000ff;
 	}
 
 }

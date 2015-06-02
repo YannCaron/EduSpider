@@ -6,6 +6,8 @@
 package fr.cyann.eduspider.manager;
 
 import fr.cyann.eduspider.message.MessageParser;
+import fr.cyann.eduspider.message.Tools;
+import static fr.cyann.eduspider.message.Tools.bytesToPrettyHex;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
@@ -35,12 +37,12 @@ public class Manager extends Thread implements MqttCallback, Constant {
 			while (true) {
 				this.wait(500);
 			}
-
 		} catch (MqttException ex) {
 			Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
 		} catch (InterruptedException ex) {
 			Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
 		}
+
 	}
 
 	@Override
@@ -49,18 +51,25 @@ public class Manager extends Thread implements MqttCallback, Constant {
 	}
 
 	@Override
-	public void messageArrived(String topic, MqttMessage message) throws Exception {
-		System.out.println("MANAGER Message received " + topic + " " + message.toString());
-		
-		MessageParser parser = MessageParser.getInstance();
-		parser.setPayload(message.getPayload());
-		
-		while (parser.readNext()) {
-			System.out.println("MANAGER Message type: " + parser.getType().name());
-			System.out.println("MANAGER Message length: " + parser.getLength());
-			System.out.println("MANAGER Message value: " + parser.getValue());
+	public void messageArrived(String topic, MqttMessage message) {
+
+		try {
+			System.out.println("MANAGER Message received " + topic + " [" + Tools.bytesToPrettyHex(message.getPayload()) + "]");
+
+			MessageParser parser = MessageParser.getInstance();
+			parser.setPayload(message.getPayload());
+
+			while (parser.hasNext()) {
+				parser.readNext();
+				System.out.println("");
+				System.out.println("MANAGER Message type: " + parser.getType().name());
+				System.out.println("MANAGER Message length: " + parser.getLength());
+				System.out.println("MANAGER Message value: " + bytesToPrettyHex(parser.getValue()));
+			}
+		} catch (Exception ex) {
+			Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
 		}
-		
+
 	}
 
 	@Override
