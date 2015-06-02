@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package fr.cyann.eduspider.message;
+package fr.cyann.eduspider.mqtt;
 
-import fr.cyann.eduspider.message.MessageEnums.MessageType;
+import fr.cyann.eduspider.mqtt.MessageEnums.MessageType;
 
 /**
  * <p>

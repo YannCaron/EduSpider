@@ -5,9 +5,9 @@
  */
 package fr.cyann.eduspider.manager;
 
-import fr.cyann.eduspider.message.MessageParser;
-import fr.cyann.eduspider.message.Tools;
-import static fr.cyann.eduspider.message.Tools.bytesToPrettyHex;
+import fr.cyann.eduspider.mqtt.MessageParser;
+import fr.cyann.eduspider.mqtt.Tools;
+import static fr.cyann.eduspider.mqtt.Tools.bytesToPrettyHex;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;

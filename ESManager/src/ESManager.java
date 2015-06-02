@@ -1,6 +1,9 @@
 
 import fr.cyann.eduspider.manager.Constant;
 import fr.cyann.eduspider.manager.Manager;
+import fr.cyann.eduspider.mqtt.Command;
+import fr.cyann.eduspider.mqtt.MessageEnums;
+import fr.cyann.eduspider.mqtt.Tools;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -12,8 +15,8 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
  * and open the template in the editor.
  */
 /**
- * <p>
- * @author cyann
+ <p>
+ @author cyann
  */
 public class ESManager implements Constant {
 
@@ -30,16 +33,16 @@ public class ESManager implements Constant {
 		sampleClient.connect(connOpts);
 		System.out.println("EMITTER Connected");
 
-		byte[] content = new byte[] {
-			(byte)0x01, (byte)0x00, (byte)0x04, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0xff,
-			(byte)0x02, (byte)0x00, (byte)0x01, (byte)0x03,
-			(byte)0xa2, (byte)0x00, (byte)0x04, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x32
-		};
-
-		/*int[] content = new int[] {
-		 0x01, 0x04, 0x00, 0x00, 0x05, 0xff
-		 };*/
-		sampleClient.publish(TOPIC_MAIN, content, 0, false);
+		/*byte[] content = new byte[]{
+			(byte) 0x01, (byte) 0x00, (byte) 0x04, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0xff,
+			(byte) 0x02, (byte) 0x00, (byte) 0x01, (byte) 0x03,
+			(byte) 0xa2, (byte) 0x00, (byte) 0x04, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x32
+		};*/
+		Command command = new Command(255, MessageEnums.CommandType.MOVE_BACK);
+		byte[] content = command.generate().toArray();
+		
+		sampleClient.publish(TOPIC_MAIN, content, 2, false);
+		System.out.println("EMITTER Message sent " + TOPIC_MAIN + " [" + Tools.bytesToPrettyHex(content) + "]");
 
 		synchronized (this) {
 			this.wait(500);
