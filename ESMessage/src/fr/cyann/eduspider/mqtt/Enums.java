@@ -6,10 +6,10 @@
 package fr.cyann.eduspider.mqtt;
 
 /**
- <p>
- @author cyann
+ * <p>
+ * @author cyann
  */
-public class MessageEnums {
+public class Enums {
 
 	public enum MessageType {
 
@@ -20,19 +20,7 @@ public class MessageEnums {
 		ACK((byte) 0x04),
 		EVENT((byte) 0x05),
 		ERROR((byte) 0x06),
-		IDENTIFICATION((byte) 0x07),
-		//
-		// scalar parameter
-		BOOLEAN((byte) 0xa1),
-		INTEGER((byte) 0xa2),
-		CHAR((byte) 0xa3),
-		HOLE((byte) 0xa4),
-		COLLISION((byte) 0xa5),
-		//
-		// scalar parameter
-		BINARY((byte) 0xb1),
-		INTEGER_ARRAY((byte) 0xb2),
-		STRING((byte) 0xb3);
+		IDENTIFICATION((byte) 0x07);
 
 		private final byte value;
 
@@ -51,7 +39,50 @@ public class MessageEnums {
 				}
 			}
 
-			throw new RuntimeException(String.format("Value [%s] not found on enum %s!", Tools.bytesToPrettyHex(b), MessageEnums.class.getSimpleName()));
+			throw new RuntimeException(String.format("Value [%s] not found on enum %s!", Tools.bytesToPrettyHex(b), Enums.class.getSimpleName()));
+		}
+
+	}
+
+	public enum ParameterType {
+
+		//
+		// scalar parameter
+		BOOLEAN((byte) 0xa1, 1),
+		INTEGER((byte) 0xa2, 4),
+		CHAR((byte) 0xa3, 1),
+		HOLE((byte) 0xa4, 1),
+		COLLISION((byte) 0xa5, 3),
+		//
+		// scalar parameter
+		BINARY((byte) 0xb1, 1),
+		INTEGER_ARRAY((byte) 0xb2, 4),
+		STRING((byte) 0xb3, 1);
+
+		private final byte value;
+		private final short length;
+
+		public byte getValue() {
+			return value;
+		}
+
+		public short getLength() {
+			return length;
+		}
+
+		private ParameterType(byte value, int length) {
+			this.value = value;
+			this.length = (short) length;
+		}
+
+		public static ParameterType ValueOf(byte b) {
+			for (ParameterType value : values()) {
+				if (value.value == b) {
+					return value;
+				}
+			}
+
+			throw new RuntimeException(String.format("Value [%s] not found on enum %s!", Tools.bytesToPrettyHex(b), Enums.class.getSimpleName()));
 		}
 
 	}

@@ -5,9 +5,8 @@
  */
 package fr.cyann.eduspider.manager;
 
-import fr.cyann.eduspider.mqtt.MessageParser;
-import fr.cyann.eduspider.mqtt.Tools;
-import static fr.cyann.eduspider.mqtt.Tools.bytesToPrettyHex;
+import fr.cyann.eduspider.mqtt.ByteBuffer;
+import fr.cyann.eduspider.mqtt.Message;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
@@ -54,18 +53,12 @@ public class Manager extends Thread implements MqttCallback, Constant {
 	public void messageArrived(String topic, MqttMessage message) {
 
 		try {
-			System.out.println("MANAGER Message received " + topic + " [" + Tools.bytesToPrettyHex(message.getPayload()) + "]");
+			ByteBuffer buffer = new ByteBuffer(message.getPayload());
+			System.out.println("MANAGER Message received " + topic + " [" + buffer.toString() + "]");
 
-			MessageParser parser = MessageParser.getInstance();
-			parser.setPayload(message.getPayload());
+			Message msg = Message.build(buffer);
+			System.out.println(msg);
 
-			while (parser.hasNext()) {
-				parser.readNext();
-				System.out.println("");
-				System.out.println("MANAGER Message type: " + parser.getType().name());
-				System.out.println("MANAGER Message length: " + parser.getLength());
-				System.out.println("MANAGER Message value: " + bytesToPrettyHex(parser.getValue()));
-			}
 		} catch (Exception ex) {
 			Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
 		}
