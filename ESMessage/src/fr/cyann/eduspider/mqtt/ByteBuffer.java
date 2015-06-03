@@ -5,14 +5,12 @@
  */
 package fr.cyann.eduspider.mqtt;
 
-import static fr.cyann.eduspider.mqtt.Tools.hexArray;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
- * <p>
- * @author cyann
+ <p>
+ @author cyann
  */
 public class ByteBuffer {
 
@@ -36,6 +34,10 @@ public class ByteBuffer {
 		return buffer.size();
 	}
 
+	public void append(boolean v) {
+		buffer.add((byte) (v ? 0x01 : 0x00));
+	}
+
 	public void append(byte v) {
 		buffer.add(v);
 	}
@@ -50,8 +52,8 @@ public class ByteBuffer {
 	}
 
 	public short getShort(int i) {
-		return (short) ((buffer.get(i) << 8) & 0x0000ff00 |
-				(buffer.get(i + 1)) & 0x000000ff);
+		return (short) ((buffer.get(i) << 8) & 0x0000ff00
+		  | (buffer.get(i + 1)) & 0x000000ff);
 	}
 
 	public void append(int v) {
@@ -62,10 +64,10 @@ public class ByteBuffer {
 	}
 
 	public int getInteger(int i) {
-		return (buffer.get(i) << 24) & 0xff000000 |
-				(buffer.get(i + 1) << 16) & 0x00ff0000 |
-				(buffer.get(i + 2) << 8) & 0x0000ff00 |
-				(buffer.get(i + 3)) & 0x000000ff;
+		return (buffer.get(i) << 24) & 0xff000000
+		  | (buffer.get(i + 1) << 16) & 0x00ff0000
+		  | (buffer.get(i + 2) << 8) & 0x0000ff00
+		  | (buffer.get(i + 3)) & 0x000000ff;
 	}
 
 	public byte[] toArray() {
@@ -78,6 +80,8 @@ public class ByteBuffer {
 
 		return bytes;
 	}
+
+	private final static char[] hexArray = "0123456789abcdef".toCharArray();
 
 	@Override
 	public String toString() {
@@ -95,4 +99,12 @@ public class ByteBuffer {
 		return sb.toString();
 	}
 
+	public static String byteToString(byte b) {
+		StringBuilder sb = new StringBuilder();
+		int v = b & 0xFF;
+		sb.append(hexArray[v >>> 4]);
+		sb.append(hexArray[v & 0x0F]);
+
+		return sb.toString();
+	}
 }

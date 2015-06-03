@@ -1,10 +1,11 @@
 
 import fr.cyann.eduspider.manager.Constant;
 import fr.cyann.eduspider.manager.Manager;
+import fr.cyann.eduspider.mqtt.ByteBuffer;
 import fr.cyann.eduspider.mqtt.Command;
 import fr.cyann.eduspider.mqtt.IntegerAttribute;
 import fr.cyann.eduspider.mqtt.Enums;
-import fr.cyann.eduspider.mqtt.Tools;
+import fr.cyann.eduspider.mqtt.IntegerArrayAttribute;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -27,24 +28,27 @@ public class ESManager implements Constant {
 
 		String broker = "tcp://localhost:1883";
 
-		MqttClient sampleClient = new MqttClient(broker, "spider", new MemoryPersistence());
+		MqttClient client = new MqttClient(broker, "spider", new MemoryPersistence());
 		MqttConnectOptions connOpts = new MqttConnectOptions();
 		connOpts.setCleanSession(true);
 		System.out.println("EMITTER Connecting to broker: " + broker);
-		sampleClient.connect(connOpts);
+		client.connect(connOpts);
 		System.out.println("EMITTER Connected");
 
 		/*byte[] content = new byte[]{
-			(byte) 0x01, (byte) 0x00, (byte) 0x04, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0xff,
-			(byte) 0x02, (byte) 0x00, (byte) 0x01, (byte) 0x03,
-			(byte) 0xa2, (byte) 0x00, (byte) 0x04, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x32
-		};*/
+		 (byte) 0x01, (byte) 0x00, (byte) 0x04, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0xff,
+		 (byte) 0x02, (byte) 0x00, (byte) 0x01, (byte) 0x03,
+		 (byte) 0xa2, (byte) 0x00, (byte) 0x04, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x32
+		 };*/
 		Command command = new Command(255, Enums.CommandType.MOVE_BACK);
 		command.add(new IntegerAttribute(50));
-		byte[] content = command.generate().toArray();
+		command.add(new IntegerArrayAttribute(new int[]{
+			1, 2, 3, 4
+		}));
+		ByteBuffer buffer = command.generate();
 
-		sampleClient.publish(TOPIC_MAIN, content, 2, false);
-		System.out.println("EMITTER Message sent " + TOPIC_MAIN + " [" + Tools.bytesToPrettyHex(content) + "]");
+		client.publish(TOPIC_MAIN, buffer.toArray(), 2, false);
+		System.out.println("EMITTER Message sent " + TOPIC_MAIN + " [" + buffer.toString() + "]");
 
 		synchronized (this) {
 			this.wait(500);

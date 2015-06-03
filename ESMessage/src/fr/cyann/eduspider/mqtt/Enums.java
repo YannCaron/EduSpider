@@ -39,7 +39,7 @@ public class Enums {
 				}
 			}
 
-			throw new RuntimeException(String.format("Value [%s] not found on enum %s!", Tools.bytesToPrettyHex(b), Enums.class.getSimpleName()));
+			throw new RuntimeException(String.format("Value [%s] not found on enum %s!", ByteBuffer.byteToString(b), Enums.class.getSimpleName()));
 		}
 
 	}
@@ -82,7 +82,7 @@ public class Enums {
 				}
 			}
 
-			throw new RuntimeException(String.format("Value [%s] not found on enum %s!", Tools.bytesToPrettyHex(b), Enums.class.getSimpleName()));
+			throw new RuntimeException(String.format("Value [%s] not found on enum %s!", ByteBuffer.byteToString(b), Enums.class.getSimpleName()));
 		}
 
 	}
@@ -128,7 +128,7 @@ public class Enums {
 				}
 			}
 
-			throw new RuntimeException(String.format("Value [%s] not found on enum %s!", Tools.bytesToPrettyHex(b), CommandType.class.getSimpleName()));
+			throw new RuntimeException(String.format("Value [%s] not found on enum %s!", ByteBuffer.byteToString(b), CommandType.class.getSimpleName()));
 		}
 
 	}
