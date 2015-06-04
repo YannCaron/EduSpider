@@ -12,6 +12,9 @@ package fr.cyann.eduspider.mqtt;
  */
 public abstract class Message<T extends Message> implements Generatable {
 
+	public static final int LENGTH_OFFSET = 1;
+	public static final int VALUE_OFFSET = 3;
+
 	private static final Enums.MessageType MESSAGE_TYPE = Enums.MessageType.MESSAGE_ID;
 	private static final short MESSAGE_LENGTH = 4;
 	private final int messageId;
@@ -33,15 +36,8 @@ public abstract class Message<T extends Message> implements Generatable {
 	}
 
 	public static Message build(ByteBuffer buffer) {
-		int id = buffer.getInteger(3);
 		Enums.MessageType type = Enums.MessageType.ValueOf(buffer.get(7));
-
-		switch (type) {
-			case COMMAND:
-				return Command.build(buffer, id);
-		}
-
-		throw new RuntimeException(String.format("Message [%s] not found to build!", type));
+		return type.getBuilder().build(buffer, 0);
 	}
 
 	public ByteBuffer generate() {

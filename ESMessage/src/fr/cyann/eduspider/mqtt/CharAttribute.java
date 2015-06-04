@@ -14,14 +14,14 @@ public class CharAttribute extends Attribute {
 	private final char value;
 
 	public CharAttribute(char value) {
-		super(Enums.ParameterType.INTEGER);
+		super(Enums.ParameterType.CHAR);
 		this.value = value;
 	}
 
 	@Override
 	public void generate(ByteBuffer buffer) {
 		super.generate(buffer);
-		buffer.append(value);
+		buffer.append((byte) value);
 	}
 
 	@Override
@@ -29,4 +29,7 @@ public class CharAttribute extends Attribute {
 		return "Char(" + value + ")";
 	}
 
+	public static CharAttribute build(ByteBuffer buffer, int offset) {
+		return new CharAttribute((char) buffer.get(offset + Message.VALUE_OFFSET));
+	}
 }

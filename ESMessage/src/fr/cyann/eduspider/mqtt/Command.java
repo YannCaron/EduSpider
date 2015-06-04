@@ -30,23 +30,20 @@ public class Command extends Message<Command> {
 		return this;
 	}
 
-	public static Command build(ByteBuffer buffer, int messageId) {
+	public static Command build(ByteBuffer buffer, int offset) {
 		Enums.CommandType type = Enums.CommandType.ValueOf(buffer.get(10));
 
+		int messageId = buffer.getInteger(offset + VALUE_OFFSET);
 		Command command = new Command(messageId, type);
 
-		int c = 11;
-		while (c < buffer.size()) {
-			Enums.ParameterType paramType = Enums.ParameterType.ValueOf(buffer.get(c));
-			short length = buffer.getShort(c + 1);
+		int o = offset + 11;
+		while (o < buffer.size()) {
+			short length = buffer.getShort(o + LENGTH_OFFSET);
 
-			switch (paramType) {
-				case INTEGER:
-					command.add(new IntegerAttribute(buffer.getInteger(c + 3)));
-					break;
-			}
-
-			c += length + 3;
+			Enums.ParameterType paramType = Enums.ParameterType.ValueOf(buffer.get(o));
+			command.add(paramType.getBuilder().build(buffer, o));
+			
+			o += length + VALUE_OFFSET;
 		}
 
 		return command;

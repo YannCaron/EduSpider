@@ -8,8 +8,8 @@ package fr.cyann.eduspider.mqtt;
 import java.util.Arrays;
 
 /**
- <p>
- @author caronyn
+ * <p>
+ * @author caronyn
  */
 public class StringAttribute extends ArrayAttribute {
 
@@ -24,14 +24,24 @@ public class StringAttribute extends ArrayAttribute {
 	public void generate(ByteBuffer buffer) {
 		super.generate(buffer);
 
-		for (byte b: values.getBytes()) {
+		for (byte b : values.getBytes()) {
 			buffer.append(b);
 		}
 	}
 
 	@Override
 	public String toString() {
-		return "CharArray(" + values + ")";
+		return "String(" + values + ")";
 	}
 
+	public static StringAttribute build(ByteBuffer buffer, int offset) {
+		short length = buffer.getShort(offset + Message.LENGTH_OFFSET);
+		byte[] values = new byte[length];
+
+		for (int i = 0; i < length; i++) {
+			values[i] = buffer.get(offset + Message.VALUE_OFFSET + i);
+		}
+
+		return new StringAttribute(new String(values));
+	}
 }

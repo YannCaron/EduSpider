@@ -11,25 +11,83 @@ package fr.cyann.eduspider.mqtt;
  */
 public class Enums {
 
+	public interface MessageBuilder {
+
+		Message build(ByteBuffer buffer, int offset);
+	}
+
+	public interface AttributeBuilder {
+
+		Attribute build(ByteBuffer buffer, int offset);
+	}
+
 	public enum MessageType {
 
 		// basic
-		MESSAGE_ID((byte) 0x01),
-		COMMAND((byte) 0x02),
-		RESPONSE((byte) 0x03),
-		ACK((byte) 0x04),
-		EVENT((byte) 0x05),
-		ERROR((byte) 0x06),
-		IDENTIFICATION((byte) 0x07);
+		MESSAGE_ID((byte) 0x01, new MessageBuilder() {
+
+			@Override
+			public Message build(ByteBuffer buffer, int offset) {
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
+		}),
+		COMMAND((byte) 0x02, new MessageBuilder() {
+
+			@Override
+			public Message build(ByteBuffer buffer, int offset) {
+				return Command.build(buffer, offset);
+			}
+		}),
+		RESPONSE((byte) 0x03, new MessageBuilder() {
+
+			@Override
+			public Message build(ByteBuffer buffer, int offset) {
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
+		}),
+		ACK((byte) 0x04, new MessageBuilder() {
+
+			@Override
+			public Message build(ByteBuffer buffer, int offset) {
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
+		}),
+		EVENT((byte) 0x05, new MessageBuilder() {
+
+			@Override
+			public Message build(ByteBuffer buffer, int offset) {
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
+		}),
+		ERROR((byte) 0x06, new MessageBuilder() {
+
+			@Override
+			public Message build(ByteBuffer buffer, int offset) {
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
+		}),
+		IDENTIFICATION((byte) 0x07, new MessageBuilder() {
+
+			@Override
+			public Message build(ByteBuffer buffer, int offset) {
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
+		});
 
 		private final byte value;
+		private final MessageBuilder builder;
 
 		public byte getValue() {
 			return value;
 		}
 
-		private MessageType(byte value) {
+		public MessageBuilder getBuilder() {
+			return builder;
+		}
+
+		private MessageType(byte value, MessageBuilder builder) {
 			this.value = value;
+			this.builder = builder;
 		}
 
 		public static MessageType ValueOf(byte b) {
@@ -48,19 +106,68 @@ public class Enums {
 
 		//
 		// scalar parameter
-		BOOLEAN((byte) 0xa1, 1),
-		INTEGER((byte) 0xa2, 4),
-		CHAR((byte) 0xa3, 1),
-		HOLE((byte) 0xa4, 1),
-		COLLISION((byte) 0xa5, 3),
+		BOOLEAN((byte) 0xa1, 1, new AttributeBuilder() {
+
+			@Override
+			public Attribute build(ByteBuffer buffer, int offset) {
+				return BooleanAttribute.build(buffer, offset);
+			}
+		}),
+		INTEGER((byte) 0xa2, 4, new AttributeBuilder() {
+
+			@Override
+			public Attribute build(ByteBuffer buffer, int offset) {
+				return IntegerAttribute.build(buffer, offset);
+			}
+		}),
+		CHAR((byte) 0xa3, 1, new AttributeBuilder() {
+
+			@Override
+			public Attribute build(ByteBuffer buffer, int offset) {
+				return CharAttribute.build(buffer, offset);
+			}
+		}),
+		HOLE((byte) 0xa4, 1, new AttributeBuilder() {
+
+			@Override
+			public Attribute build(ByteBuffer buffer, int offset) {
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
+		}),
+		COLLISION((byte) 0xa5, 3, new AttributeBuilder() {
+
+			@Override
+			public Attribute build(ByteBuffer buffer, int offset) {
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
+		}),
 		//
 		// scalar parameter
-		BINARY((byte) 0xb1, 1),
-		INTEGER_ARRAY((byte) 0xb2, 4),
-		STRING((byte) 0xb3, 1);
+		BINARY((byte) 0xb1, 1, new AttributeBuilder() {
+
+			@Override
+			public Attribute build(ByteBuffer buffer, int offset) {
+				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			}
+		}),
+		INTEGER_ARRAY((byte) 0xb2, 4, new AttributeBuilder() {
+
+			@Override
+			public Attribute build(ByteBuffer buffer, int offset) {
+				return IntegerArrayAttribute.build(buffer, offset);
+			}
+		}),
+		STRING((byte) 0xb3, 1, new AttributeBuilder() {
+
+			@Override
+			public Attribute build(ByteBuffer buffer, int offset) {
+				return StringAttribute.build(buffer, offset);
+			}
+		});
 
 		private final byte value;
 		private final short length;
+		private final AttributeBuilder builder;
 
 		public byte getValue() {
 			return value;
@@ -70,9 +177,14 @@ public class Enums {
 			return length;
 		}
 
-		private ParameterType(byte value, int length) {
+		public AttributeBuilder getBuilder() {
+			return builder;
+		}
+
+		private ParameterType(byte value, int length, AttributeBuilder builder) {
 			this.value = value;
 			this.length = (short) length;
+			this.builder = builder;
 		}
 
 		public static ParameterType ValueOf(byte b) {

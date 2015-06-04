@@ -29,4 +29,8 @@ public class IntegerAttribute extends Attribute {
 		return "Integer(" + value + ")";
 	}
 
+	public static IntegerAttribute build(ByteBuffer buffer, int offset) {
+		return new IntegerAttribute(buffer.getInteger(offset + Message.VALUE_OFFSET));
+	}
+
 }

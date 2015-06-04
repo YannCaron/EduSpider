@@ -14,7 +14,7 @@ public class BooleanAttribute extends Attribute {
 	private final boolean value;
 
 	public BooleanAttribute(boolean value) {
-		super(Enums.ParameterType.INTEGER);
+		super(Enums.ParameterType.BOOLEAN);
 		this.value = value;
 	}
 
@@ -29,4 +29,7 @@ public class BooleanAttribute extends Attribute {
 		return "Boolean(" + value + ")";
 	}
 
+	public static BooleanAttribute build(ByteBuffer buffer, int offset) {
+		return new BooleanAttribute(buffer.getBoolean(offset + Message.VALUE_OFFSET));
+	}
 }
