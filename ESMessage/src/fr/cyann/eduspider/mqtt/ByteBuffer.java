@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * <p>
- * @author cyann
+ <p>
+ @author cyann
  */
 public class ByteBuffer {
 
@@ -56,8 +56,8 @@ public class ByteBuffer {
 	}
 
 	public short getShort(int i) {
-		return (short) ((buffer.get(i) << 8) & 0x0000ff00 |
-				 (buffer.get(i + 1)) & 0x000000ff);
+		return (short) ((buffer.get(i) << 8) & 0x0000ff00
+		  | (buffer.get(i + 1)) & 0x000000ff);
 	}
 
 	public void append(int v) {
@@ -68,10 +68,10 @@ public class ByteBuffer {
 	}
 
 	public int getInteger(int i) {
-		return (buffer.get(i) << 24) & 0xff000000 |
-				 (buffer.get(i + 1) << 16) & 0x00ff0000 |
-				 (buffer.get(i + 2) << 8) & 0x0000ff00 |
-				 (buffer.get(i + 3)) & 0x000000ff;
+		return (buffer.get(i) << 24) & 0xff000000
+		  | (buffer.get(i + 1) << 16) & 0x00ff0000
+		  | (buffer.get(i + 2) << 8) & 0x0000ff00
+		  | (buffer.get(i + 3)) & 0x000000ff;
 	}
 
 	public byte[] toArray() {
@@ -93,7 +93,14 @@ public class ByteBuffer {
 		int size = buffer.size();
 		for (int j = 0; j < size; j++) {
 			if (j != 0) {
-				sb.append(" ");
+				if (j % 16 == 0) {
+					sb.append("\n");
+				} else if (j % 8 == 0) {
+					sb.append("  ");
+				} else {
+					sb.append(" ");
+				}
+
 			}
 			int v = buffer.get(j) & 0xFF;
 			sb.append(hexArray[v >>> 4]);

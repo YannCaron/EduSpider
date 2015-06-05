@@ -5,12 +5,20 @@
  */
 package fr.cyann.eduspider.mqtt;
 
+import java.util.Iterator;
+import java.util.List;
+
 /**
- * <p>
- * @author cyann
+ <p>
+ @author cyann
  */
 public class Enums {
 
+	public interface Valuable {
+		byte getValue();
+		Valuable[] getValues();
+	}
+	
 	public interface MessageBuilder {
 
 		Message build(ByteBuffer buffer, int offset);
@@ -199,7 +207,7 @@ public class Enums {
 
 	}
 
-	public enum CommandType {
+	public enum CommandType implements Valuable {
 
 		// actions
 		INITIALIZE((byte) 0x01),
@@ -225,6 +233,7 @@ public class Enums {
 
 		private final byte value;
 
+		@Override
 		public byte getValue() {
 			return value;
 		}
@@ -241,6 +250,39 @@ public class Enums {
 			}
 
 			throw new RuntimeException(String.format("Value [%s] not found on enum %s!", ByteBuffer.byteToString(b), CommandType.class.getSimpleName()));
+		}
+
+		@Override
+		public Valuable[] getValues() {
+			return values();
+		}
+
+	}
+
+	public enum Identification {
+
+		// identification
+		REGISTER((byte) 0x01),
+		RETURN_REGISTER((byte) 0x02);
+
+		private final byte value;
+
+		public byte getValue() {
+			return value;
+		}
+
+		private Identification(byte value) {
+			this.value = value;
+		}
+
+		public static Identification ValueOf(byte b) {
+			for (Identification value : values()) {
+				if (value.value == b) {
+					return value;
+				}
+			}
+
+			throw new RuntimeException(String.format("Value [%s] not found on enum %s!", ByteBuffer.byteToString(b), Identification.class.getSimpleName()));
 		}
 
 	}

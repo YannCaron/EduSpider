@@ -54,7 +54,7 @@ public class Manager extends Thread implements MqttCallback, Constant {
 
 		try {
 			ByteBuffer buffer = new ByteBuffer(message.getPayload());
-			System.out.println("MANAGER Message received " + topic + " [" + buffer.toString() + "]");
+			System.out.println("MANAGER Message received " + topic + ":\n" + buffer.toString() + "\n");
 
 			Message msg = Message.build(buffer);
 			System.out.println(msg);

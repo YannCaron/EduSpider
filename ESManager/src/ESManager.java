@@ -50,7 +50,7 @@ public class ESManager implements Constant {
 		ByteBuffer buffer = command.generate();
 
 		client.publish(TOPIC_MAIN, buffer.toArray(), 2, false);
-		System.out.println("EMITTER Message sent " + TOPIC_MAIN + " [" + buffer.toString() + "]");
+		System.out.println("EMITTER Message sent " + TOPIC_MAIN + ":\n" + buffer.toString() + "\n");
 
 		synchronized (this) {
 			this.wait(500);
