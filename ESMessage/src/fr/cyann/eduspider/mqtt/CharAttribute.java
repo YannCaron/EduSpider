@@ -6,30 +6,45 @@
 package fr.cyann.eduspider.mqtt;
 
 /**
- *
- * @author caronyn
+ <p>
+ @author cyann
  */
 public class CharAttribute extends Attribute {
 
-	private final char value;
+	private char value;
 
 	public CharAttribute(char value) {
-		super(Enums.ParameterType.CHAR);
 		this.value = value;
 	}
 
+	public CharAttribute(ByteBuffer buffer, int offset) {
+		super(buffer, offset);
+	}
+
 	@Override
-	public void generate(ByteBuffer buffer) {
-		super.generate(buffer);
+	protected byte getType() {
+		return Types.CHAR.getValue();
+	}
+
+	@Override
+	protected short getLength() {
+		return Types.CHAR.getLength();
+	}
+
+	@Override
+	protected void appendData(ByteBuffer buffer) {
 		buffer.append((byte) value);
 	}
 
 	@Override
-	public String toString() {
-		return "Char(" + value + ")";
+	protected final void parseData(ByteBuffer buffer, int offset) {
+		value = (char) buffer.get(offset + OFFSET_VALUE);
 	}
 
-	public static CharAttribute build(ByteBuffer buffer, int offset) {
-		return new CharAttribute((char) buffer.get(offset + Message.VALUE_OFFSET));
+	@Override
+	protected void appendToString(StringBuilder builder) {
+		builder.append("Char(");
+		builder.append(String.valueOf(value));
+		builder.append(')');
 	}
 }

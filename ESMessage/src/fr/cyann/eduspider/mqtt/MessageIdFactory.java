@@ -3,13 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package fr.cyann.eduspider.mqtt;
 
 /**
  <p>
  @author cyann
  */
-public interface Generatable {
-
-	void generate(ByteBuffer buffer);
+public class MessageIdFactory {
+	
 }

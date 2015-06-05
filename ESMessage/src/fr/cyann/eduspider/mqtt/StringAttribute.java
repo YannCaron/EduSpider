@@ -5,43 +5,50 @@
  */
 package fr.cyann.eduspider.mqtt;
 
-import java.util.Arrays;
-
 /**
- * <p>
- * @author caronyn
+ <p>
+ @author cyann
  */
-public class StringAttribute extends ArrayAttribute {
+public class StringAttribute extends Attribute {
 
-	private final String values;
+	private String value;
 
-	public StringAttribute(String values) {
-		super(Enums.ParameterType.STRING, (short) values.length());
-		this.values = values;
+	public StringAttribute(String value) {
+		this.value = value;
+	}
+
+	public StringAttribute(ByteBuffer buffer, int offset) {
+		super(buffer, offset);
 	}
 
 	@Override
-	public void generate(ByteBuffer buffer) {
-		super.generate(buffer);
-
-		for (byte b : values.getBytes()) {
-			buffer.append(b);
-		}
+	protected byte getType() {
+		return Types.STRING.getValue();
 	}
 
 	@Override
-	public String toString() {
-		return "String(" + values + ")";
+	protected short getLength() {
+		return (short) (Types.STRING.getLength() * value.length());
 	}
 
-	public static StringAttribute build(ByteBuffer buffer, int offset) {
-		short length = buffer.getShort(offset + Message.LENGTH_OFFSET);
-		byte[] values = new byte[length];
+	@Override
+	protected void appendData(ByteBuffer buffer) {
+		buffer.append(value);
+	}
 
-		for (int i = 0; i < length; i++) {
-			values[i] = buffer.get(offset + Message.VALUE_OFFSET + i);
-		}
+	@Override
+	protected final void parseData(ByteBuffer buffer, int offset) {
+		short length = buffer.getShort(offset + OFFSET_LENGTH);
+		int valueSize = Types.STRING.getLength();
+		int size = length / valueSize;
 
-		return new StringAttribute(new String(values));
+		value = buffer.getString(offset + OFFSET_VALUE, size);
+	}
+
+	@Override
+	protected void appendToString(StringBuilder builder) {
+		builder.append("Integer(");
+		builder.append(value);
+		builder.append(')');
 	}
 }

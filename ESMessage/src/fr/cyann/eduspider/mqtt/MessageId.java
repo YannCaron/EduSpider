@@ -1,34 +1,34 @@
+package fr.cyann.eduspider.mqtt;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package fr.cyann.eduspider.mqtt;
-
 /**
  <p>
  @author cyann
  */
-public class BooleanAttribute extends Attribute {
+public class MessageId extends Tlv {
 
-	private boolean value;
+	private int value;
 
-	public BooleanAttribute(boolean value) {
+	public MessageId(int value) {
 		this.value = value;
 	}
 
-	public BooleanAttribute(ByteBuffer buffer, int offset) {
+	public MessageId(ByteBuffer buffer, int offset) {
 		super(buffer, offset);
 	}
-
+	
 	@Override
 	protected byte getType() {
-		return Types.BOOLEAN.getValue();
+		return Message.Types.MESSAGE_ID.getValue();
 	}
 
 	@Override
 	protected short getLength() {
-		return Types.BOOLEAN.getLength();
+		return 4;
 	}
 
 	@Override
@@ -38,13 +38,14 @@ public class BooleanAttribute extends Attribute {
 
 	@Override
 	protected final void parseData(ByteBuffer buffer, int offset) {
-		value = buffer.getBoolean(offset + OFFSET_VALUE);
+		value = buffer.getInteger(offset + OFFSET_VALUE);
 	}
 
 	@Override
 	protected void appendToString(StringBuilder builder) {
-		builder.append("Boolean(");
+		builder.append("MessageId(");
 		builder.append(value);
 		builder.append(')');
 	}
+	
 }

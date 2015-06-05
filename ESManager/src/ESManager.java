@@ -5,9 +5,10 @@ import fr.cyann.eduspider.mqtt.BooleanAttribute;
 import fr.cyann.eduspider.mqtt.ByteBuffer;
 import fr.cyann.eduspider.mqtt.CharAttribute;
 import fr.cyann.eduspider.mqtt.Command;
-import fr.cyann.eduspider.mqtt.IntegerAttribute;
-import fr.cyann.eduspider.mqtt.Enums;
 import fr.cyann.eduspider.mqtt.IntegerArrayAttribute;
+import fr.cyann.eduspider.mqtt.IntegerAttribute;
+import fr.cyann.eduspider.mqtt.Message;
+import fr.cyann.eduspider.mqtt.MessageId;
 import fr.cyann.eduspider.mqtt.StringAttribute;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
@@ -39,15 +40,25 @@ public class ESManager implements Constant {
 		System.out.println("EMITTER Connected");
 
 		// create command
-		Command command = new Command(255, Enums.CommandType.MOVE_BACK);
-		command.add(new BooleanAttribute(true));
-		command.add(new IntegerAttribute(50));
-		command.add(new CharAttribute('a'));
-		command.add(new IntegerArrayAttribute(new int[]{
+		/*Command command = new Command(255, Enums.CommandType.MOVE_BACK);
+		 command.add(new BooleanAttribute(true));
+		 command.add(new IntegerAttribute(50));
+		 command.add(new CharAttribute('a'));
+		 command.add(new IntegerArrayAttribute(new int[]{
+		 1, 2, 3, 4
+		 }));
+		 command.add(new StringAttribute("Hi MQTT!"));*/
+		Message command = new Message(255, new Command(Command.Types.MOVE_FRONT));
+		command.addArgument(new BooleanAttribute(true));
+		command.addArgument(new IntegerAttribute(7));
+		command.addArgument(new CharAttribute('a'));
+		command.addArgument(new IntegerArrayAttribute(new int[]{
 			1, 2, 3, 4
 		}));
-		command.add(new StringAttribute("Hi MQTT!"));
-		ByteBuffer buffer = command.generate();
+		command.addArgument(new StringAttribute("Hi mqtt!"));
+
+		ByteBuffer buffer = new ByteBuffer();
+		command.generate(buffer);
 
 		client.publish(TOPIC_MAIN, buffer.toArray(), 2, false);
 		System.out.println("EMITTER Message sent " + TOPIC_MAIN + ":\n" + buffer.toString() + "\n");

@@ -6,31 +6,45 @@
 package fr.cyann.eduspider.mqtt;
 
 /**
- *
- * @author caronyn
+ <p>
+ @author cyann
  */
 public class IntegerAttribute extends Attribute {
 
-	private final int value;
+	private int value;
 
 	public IntegerAttribute(int value) {
-		super(Enums.ParameterType.INTEGER);
 		this.value = value;
 	}
 
+	public IntegerAttribute(ByteBuffer buffer, int offset) {
+		super(buffer, offset);
+	}
+
 	@Override
-	public void generate(ByteBuffer buffer) {
-		super.generate(buffer);
+	protected byte getType() {
+		return Types.INTEGER.getValue();
+	}
+
+	@Override
+	protected short getLength() {
+		return Types.INTEGER.getLength();
+	}
+
+	@Override
+	protected void appendData(ByteBuffer buffer) {
 		buffer.append(value);
 	}
 
 	@Override
-	public String toString() {
-		return "Integer(" + value + ")";
+	protected final void parseData(ByteBuffer buffer, int offset) {
+		value = buffer.getInteger(offset + OFFSET_VALUE);
 	}
 
-	public static IntegerAttribute build(ByteBuffer buffer, int offset) {
-		return new IntegerAttribute(buffer.getInteger(offset + Message.VALUE_OFFSET));
+	@Override
+	protected void appendToString(StringBuilder builder) {
+		builder.append("Integer(");
+		builder.append(value);
+		builder.append(')');
 	}
-
 }

@@ -50,6 +50,12 @@ public class ByteBuffer {
 		return buffer.get(i);
 	}
 
+	public void append(byte[] vs) {
+		for (int i = 0; i < vs.length; i++) {
+			buffer.add(vs[i]);
+		}
+	}
+
 	public void append(short v) {
 		buffer.add((byte) (v >>> 8));
 		buffer.add((byte) (v));
@@ -74,6 +80,22 @@ public class ByteBuffer {
 		  | (buffer.get(i + 3)) & 0x000000ff;
 	}
 
+	public void append(String s) {
+		for (byte b : s.getBytes()) {
+			buffer.add(b);
+		}
+	}
+	
+	public String getString(int start, int length) {
+		byte[] values = new byte[length];
+		
+		for (int i = 0; i < length; i++) {
+			values[i] = buffer.get(start + i);
+		}
+		
+		return new String(values);
+	}
+	
 	public byte[] toArray() {
 		int size = buffer.size();
 		byte[] bytes = new byte[size];

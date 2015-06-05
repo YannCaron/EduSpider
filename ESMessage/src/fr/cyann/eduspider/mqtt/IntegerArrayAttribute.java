@@ -8,44 +8,54 @@ package fr.cyann.eduspider.mqtt;
 import java.util.Arrays;
 
 /**
- * <p>
- * @author caronyn
+ <p>
+ @author cyann
  */
-public class IntegerArrayAttribute extends ArrayAttribute {
+public class IntegerArrayAttribute extends Attribute {
 
-	private final int[] values;
+	private int[] values;
 
 	public IntegerArrayAttribute(int[] values) {
-		super(Enums.ParameterType.INTEGER_ARRAY, (short) values.length);
 		this.values = values;
 	}
 
-	@Override
-	public void generate(ByteBuffer buffer) {
-		super.generate(buffer);
+	public IntegerArrayAttribute(ByteBuffer buffer, int offset) {
+		super(buffer, offset);
+	}
 
+	@Override
+	protected byte getType() {
+		return Types.INTEGER_ARRAY.getValue();
+	}
+
+	@Override
+	protected short getLength() {
+		return (short) (Types.INTEGER_ARRAY.getLength() * values.length);
+	}
+
+	@Override
+	protected void appendData(ByteBuffer buffer) {
 		for (int value : values) {
 			buffer.append(value);
 		}
 	}
 
 	@Override
-	public String toString() {
-		return "IntegerArray(" + Arrays.toString(values) + ")";
-	}
-
-	public static IntegerArrayAttribute build(ByteBuffer buffer, int offset) {
-		short length = buffer.getShort(offset + Message.LENGTH_OFFSET);
-
-		int valueSize = Enums.ParameterType.INTEGER_ARRAY.getLength();
+	protected final void parseData(ByteBuffer buffer, int offset) {
+		short length = buffer.getShort(offset + OFFSET_LENGTH);
+		int valueSize = Types.INTEGER_ARRAY.getLength();
 		int size = length / valueSize;
-		int[] values = new int[size];
 
+		values = new int[size];
 		for (int i = 0; i < size; i++) {
-			values[i] = buffer.getInteger(offset + Message.VALUE_OFFSET + (i * valueSize));
+			values[i] = buffer.getInteger(offset + OFFSET_VALUE + (i * valueSize));
 		}
-
-		return new IntegerArrayAttribute(values);
 	}
 
+	@Override
+	protected void appendToString(StringBuilder builder) {
+		builder.append("IntegerArray(");
+		builder.append(Arrays.toString(values));
+		builder.append(')');
+	}
 }
