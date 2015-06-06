@@ -3,32 +3,32 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package fr.cyann.eduspider.mqtt;
+package fr.cyann.eduspider.mqtt.message;
 
 /**
  <p>
  @author cyann
  */
-public class IntegerAttribute extends Attribute {
+public class StringAttribute extends Attribute {
 
-	private int value;
+	private String value;
 
-	public IntegerAttribute(int value) {
+	public StringAttribute(String value) {
 		this.value = value;
 	}
 
-	public IntegerAttribute(ByteBuffer buffer, int offset) {
+	public StringAttribute(ByteBuffer buffer, int offset) {
 		super(buffer, offset);
 	}
 
 	@Override
 	protected byte getType() {
-		return Types.INTEGER.getValue();
+		return Types.STRING.getValue();
 	}
 
 	@Override
 	protected short getLength() {
-		return Types.INTEGER.getLength();
+		return (short) (Types.STRING.getLength() * value.length());
 	}
 
 	@Override
@@ -38,12 +38,16 @@ public class IntegerAttribute extends Attribute {
 
 	@Override
 	protected final void parseData(ByteBuffer buffer, int offset) {
-		value = buffer.getInteger(offset + OFFSET_VALUE);
+		short length = buffer.getShort(offset + OFFSET_LENGTH);
+		int valueSize = Types.STRING.getLength();
+		int size = length / valueSize;
+
+		value = buffer.getString(offset + OFFSET_VALUE, size);
 	}
 
 	@Override
 	protected void appendToString(StringBuilder builder) {
-		builder.append("Integer(");
+		builder.append("String(");
 		builder.append(value);
 		builder.append(')');
 	}

@@ -3,32 +3,32 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package fr.cyann.eduspider.mqtt;
+package fr.cyann.eduspider.mqtt.message;
 
 /**
  <p>
  @author cyann
  */
-public class BooleanAttribute extends Attribute {
+public class IntegerAttribute extends Attribute {
 
-	private boolean value;
+	private int value;
 
-	public BooleanAttribute(boolean value) {
+	public IntegerAttribute(int value) {
 		this.value = value;
 	}
 
-	public BooleanAttribute(ByteBuffer buffer, int offset) {
+	public IntegerAttribute(ByteBuffer buffer, int offset) {
 		super(buffer, offset);
 	}
 
 	@Override
 	protected byte getType() {
-		return Types.BOOLEAN.getValue();
+		return Types.INTEGER.getValue();
 	}
 
 	@Override
 	protected short getLength() {
-		return Types.BOOLEAN.getLength();
+		return Types.INTEGER.getLength();
 	}
 
 	@Override
@@ -38,12 +38,12 @@ public class BooleanAttribute extends Attribute {
 
 	@Override
 	protected final void parseData(ByteBuffer buffer, int offset) {
-		value = buffer.getBoolean(offset + OFFSET_VALUE);
+		value = buffer.getInteger(offset + OFFSET_VALUE);
 	}
 
 	@Override
 	protected void appendToString(StringBuilder builder) {
-		builder.append("Boolean(");
+		builder.append("Integer(");
 		builder.append(value);
 		builder.append(')');
 	}

@@ -3,12 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package fr.cyann.eduspider.mqtt;
+package fr.cyann.eduspider.mqtt.message;
 
-import static fr.cyann.eduspider.mqtt.Tlv.OFFSET_LENGTH;
-import static fr.cyann.eduspider.mqtt.Tlv.OFFSET_VALUE;
+import static fr.cyann.eduspider.mqtt.message.Tlv.OFFSET_LENGTH;
+import static fr.cyann.eduspider.mqtt.message.Tlv.OFFSET_VALUE;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  <p>
@@ -70,6 +71,8 @@ public class Message implements Generatable {
 	private final MessageId id;
 	private final Tlv content;
 	private final List<Attribute> attributes;
+	private final static Random RND = new Random();
+
 
 	public Message(MessageId id, Tlv content) {
 		this.attributes = new ArrayList<Attribute>();
@@ -136,6 +139,10 @@ public class Message implements Generatable {
 		return list;
 	}
 
+	public Message(Tlv content) {
+		this(new MessageId(RND.nextInt()), content);
+	}
+	
 	public Message(int id, Tlv content) {
 		this(new MessageId(id), content);
 	}

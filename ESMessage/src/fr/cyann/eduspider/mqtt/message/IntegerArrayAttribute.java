@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package fr.cyann.eduspider.mqtt;
+package fr.cyann.eduspider.mqtt.message;
 
 import java.util.Arrays;
 

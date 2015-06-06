@@ -3,48 +3,48 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package fr.cyann.eduspider.mqtt;
+package fr.cyann.eduspider.mqtt.message;
 
 /**
  <p>
  @author cyann
  */
-public class CharAttribute extends Attribute {
+public class BooleanAttribute extends Attribute {
 
-	private char value;
+	private boolean value;
 
-	public CharAttribute(char value) {
+	public BooleanAttribute(boolean value) {
 		this.value = value;
 	}
 
-	public CharAttribute(ByteBuffer buffer, int offset) {
+	public BooleanAttribute(ByteBuffer buffer, int offset) {
 		super(buffer, offset);
 	}
 
 	@Override
 	protected byte getType() {
-		return Types.CHAR.getValue();
+		return Types.BOOLEAN.getValue();
 	}
 
 	@Override
 	protected short getLength() {
-		return Types.CHAR.getLength();
+		return Types.BOOLEAN.getLength();
 	}
 
 	@Override
 	protected void appendData(ByteBuffer buffer) {
-		buffer.append((byte) value);
+		buffer.append(value);
 	}
 
 	@Override
 	protected final void parseData(ByteBuffer buffer, int offset) {
-		value = (char) buffer.get(offset + OFFSET_VALUE);
+		value = buffer.getBoolean(offset + OFFSET_VALUE);
 	}
 
 	@Override
 	protected void appendToString(StringBuilder builder) {
-		builder.append("Char(");
-		builder.append(String.valueOf(value));
+		builder.append("Boolean(");
+		builder.append(value);
 		builder.append(')');
 	}
 }

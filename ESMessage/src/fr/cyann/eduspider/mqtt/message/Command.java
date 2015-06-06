@@ -1,4 +1,6 @@
-package fr.cyann.eduspider.mqtt;
+package fr.cyann.eduspider.mqtt.message;
+
+import java.util.Arrays;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -35,23 +37,22 @@ public class Command extends Tlv {
 		ON_DETECT((byte) 0xb1),
 		ON_DETECT_HOLE((byte) 0xb2);
 
-		private final byte value;
+		private final byte code;
 
-		public byte getValue() {
-			return value;
+		public byte getCode() {
+			return code;
 		}
 
-		private Types(byte value) {
-			this.value = value;
+		private Types(byte code) {
+			this.code = code;
 		}
 
 		public static Types ValueOf(byte b) {
-			for (Types value : values()) {
-				if (value.value == b) {
-					return value;
+			for (Types code : values()) {
+				if (code.code == b) {
+					return code;
 				}
 			}
-
 			throw new RuntimeException(String.format("Value [%s] not found on enum %s!", ByteBuffer.byteToString(b), Types.class.getSimpleName()));
 		}
 
@@ -83,7 +84,7 @@ public class Command extends Tlv {
 
 	@Override
 	protected void appendData(ByteBuffer buffer) {
-		buffer.append(command.getValue());
+		buffer.append(command.getCode());
 	}
 
 	@Override

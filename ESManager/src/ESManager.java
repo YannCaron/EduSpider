@@ -1,15 +1,15 @@
 
 import fr.cyann.eduspider.manager.Constant;
 import fr.cyann.eduspider.manager.Manager;
-import fr.cyann.eduspider.mqtt.BooleanAttribute;
-import fr.cyann.eduspider.mqtt.ByteBuffer;
-import fr.cyann.eduspider.mqtt.CharAttribute;
-import fr.cyann.eduspider.mqtt.Command;
-import fr.cyann.eduspider.mqtt.IntegerArrayAttribute;
-import fr.cyann.eduspider.mqtt.IntegerAttribute;
-import fr.cyann.eduspider.mqtt.Message;
-import fr.cyann.eduspider.mqtt.MessageId;
-import fr.cyann.eduspider.mqtt.StringAttribute;
+import fr.cyann.eduspider.mqtt.message.BooleanAttribute;
+import fr.cyann.eduspider.mqtt.message.ByteBuffer;
+import fr.cyann.eduspider.mqtt.message.CharAttribute;
+import fr.cyann.eduspider.mqtt.message.Command;
+import fr.cyann.eduspider.mqtt.message.IntegerArrayAttribute;
+import fr.cyann.eduspider.mqtt.message.IntegerAttribute;
+import fr.cyann.eduspider.mqtt.message.Message;
+import fr.cyann.eduspider.mqtt.message.MessageId;
+import fr.cyann.eduspider.mqtt.message.StringAttribute;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -40,14 +40,6 @@ public class ESManager implements Constant {
 		System.out.println("EMITTER Connected");
 
 		// create command
-		/*Command command = new Command(255, Enums.CommandType.MOVE_BACK);
-		 command.add(new BooleanAttribute(true));
-		 command.add(new IntegerAttribute(50));
-		 command.add(new CharAttribute('a'));
-		 command.add(new IntegerArrayAttribute(new int[]{
-		 1, 2, 3, 4
-		 }));
-		 command.add(new StringAttribute("Hi MQTT!"));*/
 		Message command = new Message(255, new Command(Command.Types.MOVE_FRONT));
 		command.addArgument(new BooleanAttribute(true));
 		command.addArgument(new IntegerAttribute(7));

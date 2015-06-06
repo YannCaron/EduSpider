@@ -5,69 +5,26 @@
  */
 package fr.cyann.eduspider.manager;
 
-import fr.cyann.eduspider.mqtt.ByteBuffer;
-import fr.cyann.eduspider.mqtt.Message;
+import fr.cyann.eduspider.mqtt.MessageManager;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
-import org.eclipse.paho.client.mqttv3.MqttCallback;
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
-import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
-public class Manager extends Thread implements MqttCallback, Constant {
+public class Manager extends Thread implements Constant {
 
 	@Override
 	public synchronized void run() {
+		MessageManager manager = new MessageManager(BROKER, MANAGER_NAME);
+		manager.connect();
+		manager.subscribe(TOPIC_MAIN);
+		
 		try {
-			MqttClient mqtt = new MqttClient(BROKER, MANAGER_NAME, new MemoryPersistence());
-			MqttConnectOptions connOpts = new MqttConnectOptions();
-			connOpts.setCleanSession(true);
-
-			System.out.println("MANAGER Connecting to broker: " + BROKER);
-			mqtt.setCallback(this);
-			mqtt.connect(connOpts);
-			System.out.println("MANAGER Connected");
-
-			mqtt.subscribe(TOPIC_MAIN, QOS_ONCE);
-
 			while (true) {
 				this.wait(500);
 			}
-		} catch (MqttException ex) {
-			Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
 		} catch (InterruptedException ex) {
 			Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
 		}
 
-	}
-
-	@Override
-	public void connectionLost(Throwable cause) {
-		System.out.println("MANAGER Connection lost!");
-	}
-
-	@Override
-	public void messageArrived(String topic, MqttMessage message) {
-
-		try {
-			ByteBuffer buffer = new ByteBuffer(message.getPayload());
-			System.out.println("MANAGER Message received " + topic + ":\n" + buffer.toString() + "\n");
-
-			Message msg = new Message(buffer);
-			System.out.println(msg);
-
-		} catch (Exception ex) {
-			Logger.getLogger(Manager.class.getName()).log(Level.SEVERE, null, ex);
-		}
-
-	}
-
-	@Override
-	public void deliveryComplete(IMqttDeliveryToken token) {
-		System.out.println("MANAGER Delivery complete " + token.toString());
 	}
 
 }

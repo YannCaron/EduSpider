@@ -10,6 +10,8 @@ package fr.cyann.eduspider.mqtt;
  <p>
  @author cyann
  */
-public class MessageIdFactory {
+public interface Rule {
+	
+	boolean predicate(Context context);
 	
 }
