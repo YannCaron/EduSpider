@@ -9,7 +9,7 @@ package fr.cyann.eduspider.mqtt.message;
  <p>
  @author cyann
  */
-public class CharAttribute extends Attribute {
+public class CharAttribute extends Attribute<Character> {
 
 	private char value;
 
@@ -22,12 +22,12 @@ public class CharAttribute extends Attribute {
 	}
 
 	@Override
-	protected byte getType() {
+	public byte getRawType() {
 		return Types.CHAR.getValue();
 	}
 
 	@Override
-	protected short getLength() {
+	public short getLength() {
 		return Types.CHAR.getLength();
 	}
 
@@ -46,5 +46,10 @@ public class CharAttribute extends Attribute {
 		builder.append("Char(");
 		builder.append(String.valueOf(value));
 		builder.append(')');
+	}
+
+	@Override
+	public Character getValue() {
+		return value;
 	}
 }

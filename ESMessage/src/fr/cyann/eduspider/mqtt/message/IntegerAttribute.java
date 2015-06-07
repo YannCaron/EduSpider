@@ -9,7 +9,7 @@ package fr.cyann.eduspider.mqtt.message;
  <p>
  @author cyann
  */
-public class IntegerAttribute extends Attribute {
+public class IntegerAttribute extends Attribute<Integer> {
 
 	private int value;
 
@@ -22,12 +22,12 @@ public class IntegerAttribute extends Attribute {
 	}
 
 	@Override
-	protected byte getType() {
+	public byte getRawType() {
 		return Types.INTEGER.getValue();
 	}
 
 	@Override
-	protected short getLength() {
+	public short getLength() {
 		return Types.INTEGER.getLength();
 	}
 
@@ -46,5 +46,10 @@ public class IntegerAttribute extends Attribute {
 		builder.append("Integer(");
 		builder.append(value);
 		builder.append(')');
+	}
+
+	@Override
+	public Integer getValue() {
+		return value;
 	}
 }

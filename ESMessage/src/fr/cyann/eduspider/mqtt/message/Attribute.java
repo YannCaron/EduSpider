@@ -9,7 +9,7 @@ package fr.cyann.eduspider.mqtt.message;
  <p>
  @author cyann
  */
-public abstract class Attribute extends Tlv {
+public abstract class Attribute<T> extends Tlv<T> {
 
 	public interface Factory {
 

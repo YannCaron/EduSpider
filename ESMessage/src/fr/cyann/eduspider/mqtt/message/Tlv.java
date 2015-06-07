@@ -8,8 +8,9 @@ package fr.cyann.eduspider.mqtt.message;
 /**
  <p>
  @author cyann
+ * @param <T>
  */
-public abstract class Tlv implements Generatable {
+public abstract class Tlv<T> implements Generatable {
 
 	public interface Factory {
 
@@ -26,10 +27,16 @@ public abstract class Tlv implements Generatable {
 		parseData(buffer, offset);
 	}
 
-	protected abstract byte getType();
-
-	protected abstract short getLength();
-
+	public abstract byte getRawType();
+		
+	public Message.Types getType() {
+		return Message.Types.valueOf(getRawType());
+	}
+	
+	public abstract short getLength();
+	
+	public abstract T getValue();
+	
 	protected abstract void appendData(ByteBuffer buffer);
 
 	protected abstract void parseData(ByteBuffer buffer, int offset);
@@ -38,7 +45,7 @@ public abstract class Tlv implements Generatable {
 
 	@Override
 	public void generate(ByteBuffer buffer) {
-		buffer.append(getType());
+		buffer.append(getRawType());
 		buffer.append(getLength());
 
 		appendData(buffer);

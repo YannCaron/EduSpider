@@ -1,18 +1,16 @@
 
 import fr.cyann.eduspider.manager.Constant;
 import fr.cyann.eduspider.manager.Manager;
-import fr.cyann.eduspider.mqtt.message.BooleanAttribute;
 import fr.cyann.eduspider.mqtt.message.ByteBuffer;
-import fr.cyann.eduspider.mqtt.message.CharAttribute;
-import fr.cyann.eduspider.mqtt.message.Command;
-import fr.cyann.eduspider.mqtt.message.IntegerArrayAttribute;
-import fr.cyann.eduspider.mqtt.message.IntegerAttribute;
+import fr.cyann.eduspider.mqtt.message.Identication;
 import fr.cyann.eduspider.mqtt.message.Message;
-import fr.cyann.eduspider.mqtt.message.MessageId;
 import fr.cyann.eduspider.mqtt.message.StringAttribute;
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 /*
@@ -24,7 +22,7 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
  <p>
  @author cyann
  */
-public class ESManager implements Constant {
+public class ESManager implements Constant, MqttCallback {
 
 	public void run() throws MqttException, InterruptedException {
 		Manager manager = new Manager();
@@ -38,25 +36,30 @@ public class ESManager implements Constant {
 		System.out.println("EMITTER Connecting to broker: " + broker);
 		client.connect(connOpts);
 		System.out.println("EMITTER Connected");
+		
+		client.subscribe(TOPIC_MAIN);
 
 		// create command
-		Message command = new Message(255, new Command(Command.Types.MOVE_FRONT));
-		command.addArgument(new BooleanAttribute(true));
-		command.addArgument(new IntegerAttribute(7));
-		command.addArgument(new CharAttribute('a'));
-		command.addArgument(new IntegerArrayAttribute(new int[]{
+		/*Message command = new Message(255, new Command(Command.Types.MOVE_FRONT));
+		command.addAttribute(new BooleanAttribute(true));
+		command.addAttribute(new IntegerAttribute(7));
+		command.addAttribute(new CharAttribute('a'));
+		command.addAttribute(new IntegerArrayAttribute(new int[]{
 			1, 2, 3, 4
 		}));
-		command.addArgument(new StringAttribute("Hi mqtt!"));
+		command.addAttribute(new StringAttribute("Hi mqtt!"));*/
 
+		Message message = new Message(new Identication(Identication.Types.REGISTER));
+		message.addAttribute(new StringAttribute("AL_%d"));
+		
 		ByteBuffer buffer = new ByteBuffer();
-		command.generate(buffer);
+		message.generate(buffer);
 
 		client.publish(TOPIC_MAIN, buffer.toArray(), 2, false);
 		System.out.println("EMITTER Message sent " + TOPIC_MAIN + ":\n" + buffer.toString() + "\n");
 
 		synchronized (this) {
-			this.wait(500);
+			this.wait(1500);
 		}
 
 		System.exit(0);
@@ -64,6 +67,19 @@ public class ESManager implements Constant {
 
 	public static void main(String[] args) throws MqttException, InterruptedException {
 		new ESManager().run();
+	}
+
+	@Override
+	public void connectionLost(Throwable cause) {
+	}
+
+	@Override
+	public void messageArrived(String topic, MqttMessage message) throws Exception {
+		System.out.println("MESSAGE RECEIVED");
+	}
+
+	@Override
+	public void deliveryComplete(IMqttDeliveryToken token) {
 	}
 
 }

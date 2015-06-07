@@ -9,12 +9,12 @@ package fr.cyann.eduspider.mqtt.message;
  <p>
  @author cyann
  */
-public class MessageId extends Tlv {
+public class MessageId extends Tlv<Integer> {
 
-	private int value;
+	private int id;
 
-	public MessageId(int value) {
-		this.value = value;
+	public MessageId(int id) {
+		this.id = id;
 	}
 
 	public MessageId(ByteBuffer buffer, int offset) {
@@ -22,29 +22,34 @@ public class MessageId extends Tlv {
 	}
 	
 	@Override
-	protected byte getType() {
+	public byte getRawType() {
 		return Message.Types.MESSAGE_ID.getValue();
 	}
 
 	@Override
-	protected short getLength() {
+	public short getLength() {
 		return 4;
 	}
 
 	@Override
+	public Integer getValue() {
+		return id;
+	}
+
+	@Override
 	protected void appendData(ByteBuffer buffer) {
-		buffer.append(value);
+		buffer.append(id);
 	}
 
 	@Override
 	protected final void parseData(ByteBuffer buffer, int offset) {
-		value = buffer.getInteger(offset + OFFSET_VALUE);
+		id = buffer.getInteger(offset + OFFSET_VALUE);
 	}
 
 	@Override
 	protected void appendToString(StringBuilder builder) {
 		builder.append("MessageId(");
-		builder.append(value);
+		builder.append(id);
 		builder.append(')');
 	}
 	

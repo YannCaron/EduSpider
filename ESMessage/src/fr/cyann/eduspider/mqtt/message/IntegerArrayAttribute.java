@@ -11,7 +11,7 @@ import java.util.Arrays;
  <p>
  @author cyann
  */
-public class IntegerArrayAttribute extends Attribute {
+public class IntegerArrayAttribute extends Attribute<int[]> {
 
 	private int[] values;
 
@@ -24,12 +24,12 @@ public class IntegerArrayAttribute extends Attribute {
 	}
 
 	@Override
-	protected byte getType() {
+	public byte getRawType() {
 		return Types.INTEGER_ARRAY.getValue();
 	}
 
 	@Override
-	protected short getLength() {
+	public short getLength() {
 		return (short) (Types.INTEGER_ARRAY.getLength() * values.length);
 	}
 
@@ -57,5 +57,10 @@ public class IntegerArrayAttribute extends Attribute {
 		builder.append("IntegerArray(");
 		builder.append(Arrays.toString(values));
 		builder.append(')');
+	}
+
+	@Override
+	public int[] getValue() {
+		return values;
 	}
 }

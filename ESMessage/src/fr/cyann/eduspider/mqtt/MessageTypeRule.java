@@ -5,26 +5,24 @@
  */
 package fr.cyann.eduspider.mqtt;
 
+import fr.cyann.eduspider.mqtt.message.Message;
+
 /**
  <p>
  @author cyann
  */
-public class AndRule implements Rule {
+public class MessageTypeRule implements Rule {
 
-	private final Rule[] rules;
+	private Message.Types type;
 
-	public AndRule(Rule... rules) {
-		this.rules = rules;
+	public MessageTypeRule(Message.Types type) {
+		this.type = type;
 	}
 
 	@Override
 	public boolean predicate(Context context) {
-		for (Rule rule : rules) {
-			if (!rule.predicate(context)) {
-				return false;
-			}
-		}
-		return true;
+
+		return context.getCurrentMessage().getContent().getType() == type;
 	}
 
 }

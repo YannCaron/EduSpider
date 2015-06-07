@@ -11,31 +11,17 @@ import java.util.Arrays;
  <p>
  @author cyann
  */
-public class Command extends Tlv<Command.Types> {
+public class Identication extends Tlv {
 
 	public enum Types {
 
 		// actions
-		INITIALIZE((byte) 0x01),
-		MOVE_FRONT((byte) 0x02),
-		MOVE_BACK((byte) 0x03),
-		MOVE_LEFT((byte) 0x04),
-		MOVE_RIGHT((byte) 0x05),
-		ROTATE_LEFT((byte) 0x06),
-		ROTATE_RIGHT((byte) 0x07),
+		REGISTER((byte) 0x01),
+		LIST_ALL((byte) 0x02),
 		//
-		// properties
-		SET_SPEED((byte) 0xa1),
-		GET_SPEED((byte) 0xa2),
-		GET_DISTANCE((byte) 0xa3),
-		GET_ZONE((byte) 0xa4),
-		GET_ORIENTATION((byte) 0xa5),
-		SET_MOTOR_ACTIVE((byte) 0xa6),
-		GET_MOTOR_ACTIVE((byte) 0xa7),
-		//
-		// events
-		ON_DETECT((byte) 0xb1),
-		ON_DETECT_HOLE((byte) 0xb2);
+		// return
+		RET_REGISTRATION((byte) 0xa1),
+		RET_CLIENTS((byte) 0xa2);
 
 		private final byte code;
 
@@ -58,23 +44,19 @@ public class Command extends Tlv<Command.Types> {
 
 	}
 
-	// events
-	public static final byte ON_DETECT = (byte) 0xb1;
-	public static final byte ON_DETECT_HOLE = (byte) 0xb2;
+	private Types value;
 
-	private Types command;
-
-	public Command(Types command) {
-		this.command = command;
+	public Identication(Types value) {
+		this.value = value;
 	}
 
-	public Command(ByteBuffer buffer, int offset) {
+	public Identication(ByteBuffer buffer, int offset) {
 		super(buffer, offset);
 	}
 
 	@Override
 	public byte getRawType() {
-		return Message.Types.COMMAND.getValue();
+		return Message.Types.IDENTICATION.getValue();
 	}
 
 	@Override
@@ -82,25 +64,24 @@ public class Command extends Tlv<Command.Types> {
 		return 1;
 	}
 
-	@Override
 	public Types getValue() {
-		return command;
+		return value;
 	}
-	
+
 	@Override
 	protected void appendData(ByteBuffer buffer) {
-		buffer.append(command.getCode());
+		buffer.append(value.getCode());
 	}
 
 	@Override
 	protected final void parseData(ByteBuffer buffer, int offset) {
-		command = Types.ValueOf(buffer.get(offset + OFFSET_VALUE));
+		value = Types.ValueOf(buffer.get(offset + OFFSET_VALUE));
 	}
 
 	@Override
 	protected void appendToString(StringBuilder builder) {
 		builder.append("Command(");
-		builder.append(command);
+		builder.append(value);
 		builder.append(')');
 	}
 }

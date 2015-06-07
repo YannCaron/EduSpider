@@ -13,19 +13,51 @@ import fr.cyann.eduspider.mqtt.message.Message;
  */
 public class Context {
 
-	public enum Action {
+	public enum Events {
 
 		CONNECTION_LOST, MESSAGE_ARRIVED, DELIVERY_COMPLETED
 	}
 
-	public final Action currentAction;
-	public final String currentTopic;
-	public final Message currentMessage;
+	// attribute
+	private final MessageManager manager;
+	private Events currentEvent;
+	private String currentTopic;
+	private Message currentMessage;
 
-	public Context(Action currentAction, String currentTopic, Message currentMessage) {
-		this.currentAction = currentAction;
-		this.currentTopic = currentTopic;
-		this.currentMessage = currentMessage;
+	// constructor
+	public Context(MessageManager manager) {
+		this.manager = manager;
 	}
 
+	// property
+	public MessageManager getManager() {
+		return manager;
+	}
+
+	public Events getCurrentEvent() {
+		return currentEvent;
+	}
+
+	public String getCurrentTopic() {
+		return currentTopic;
+	}
+
+	public Message getCurrentMessage() {
+		return currentMessage;
+	}
+
+	// method
+	public void initConnectionLost() {
+		currentEvent = Events.CONNECTION_LOST;
+	}
+
+	public void initMessageArrived(String topic, Message message) {
+		currentEvent = Events.MESSAGE_ARRIVED;
+		currentTopic = topic;
+		currentMessage = message;
+	}
+
+	public void initDeliveryCompleted() {
+		currentEvent = Events.DELIVERY_COMPLETED;
+	}
 }

@@ -9,7 +9,7 @@ package fr.cyann.eduspider.mqtt.message;
  <p>
  @author cyann
  */
-public class BooleanAttribute extends Attribute {
+public class BooleanAttribute extends Attribute<Boolean> {
 
 	private boolean value;
 
@@ -22,12 +22,12 @@ public class BooleanAttribute extends Attribute {
 	}
 
 	@Override
-	protected byte getType() {
+	public byte getRawType() {
 		return Types.BOOLEAN.getValue();
 	}
 
 	@Override
-	protected short getLength() {
+	public short getLength() {
 		return Types.BOOLEAN.getLength();
 	}
 
@@ -46,5 +46,10 @@ public class BooleanAttribute extends Attribute {
 		builder.append("Boolean(");
 		builder.append(value);
 		builder.append(')');
+	}
+
+	@Override
+	public Boolean getValue() {
+		return value;
 	}
 }

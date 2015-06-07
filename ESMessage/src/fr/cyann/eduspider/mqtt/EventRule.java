@@ -6,7 +6,7 @@
 
 package fr.cyann.eduspider.mqtt;
 
-import fr.cyann.eduspider.mqtt.Context.Action;
+import fr.cyann.eduspider.mqtt.Context.Events;
 
 /**
  <p>
@@ -14,15 +14,15 @@ import fr.cyann.eduspider.mqtt.Context.Action;
  */
 public class EventRule implements Rule {
 	
-	private final Action action;
+	private final Events event;
 
-	public EventRule(Action action) {
-		this.action = action;
+	public EventRule(Events event) {
+		this.event = event;
 	}
 
 	@Override
 	public boolean predicate(Context context) {
-		return context.currentAction == action;
+		return context.getCurrentEvent() == event;
 	}
 	
 }

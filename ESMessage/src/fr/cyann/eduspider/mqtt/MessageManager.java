@@ -29,9 +29,11 @@ public class MessageManager implements MqttCallback {
 	private final List<RuleAction> rules;
 	private final MqttClient mqtt;
 	private final MqttConnectOptions connOpts;
+	private final Context context;
 
 	public MessageManager(String address, String name) {
 		rules = new ArrayList<RuleAction>();
+		context = new Context(this);
 
 		try {
 
@@ -83,20 +85,31 @@ public class MessageManager implements MqttCallback {
 	public void publish(String topic, Message message) {
 		ByteBuffer buffer = new ByteBuffer();
 		message.generate(buffer);
-
+		try {
+			System.out.println("PUBLISH");
+			mqtt.publish(topic, buffer.toArray(), 0, false);
+			Logger.getLogger(MessageManager.class.getName()).log(Level.INFO, getLogMessage("Message sent, topic [%s], data [\n%s\n]", topic, buffer.toString()));
+		} catch (MqttException ex) {
+			Logger.getLogger(MessageManager.class.getName()).log(Level.SEVERE, getLogMessage("Cannot publish message on topic [%s], data [\n%s\n]", topic, buffer.toString()), ex);
+		}
 	}
 
-	@Override
-	public void connectionLost(Throwable cause) {
-		Logger.getLogger(MessageManager.class.getName()).log(Level.WARNING, getLogMessage("Connection lost from [%s], cause [%s]", mqtt.getServerURI(), cause.getMessage()));
-
-		Context context = new Context(Context.Action.CONNECTION_LOST, null, null);
-
+	private void evalRules() {
 		for (RuleAction rule : rules) {
 			if (rule.predicate(context)) {
 				rule.run(context);
 			}
 		}
+
+	}
+
+	@Override
+	public void connectionLost(Throwable cause) {
+		Logger.getLogger(MessageManager.class.getName()).log(Level.SEVERE, getLogMessage("Connection lost from [%s], cause [%s]", mqtt.getServerURI(), cause.getMessage()));
+		cause.printStackTrace();
+
+		context.initConnectionLost();
+		evalRules();
 	}
 
 	@Override
@@ -104,13 +117,8 @@ public class MessageManager implements MqttCallback {
 		ByteBuffer buffer = new ByteBuffer(message.getPayload());
 		Logger.getLogger(MessageManager.class.getName()).log(Level.INFO, getLogMessage("Message received from topic [%s], data [\n%s\n]", topic, buffer.toString()));
 
-		Context context = new Context(Context.Action.MESSAGE_ARRIVED, topic, new Message(buffer));
-
-		for (RuleAction rule : rules) {
-			if (rule.predicate(context)) {
-				rule.run(context);
-			}
-		}
+		context.initMessageArrived(topic, new Message(buffer));
+		evalRules();
 	}
 
 	@Override
@@ -119,13 +127,8 @@ public class MessageManager implements MqttCallback {
 			ByteBuffer buffer = new ByteBuffer(token.getMessage().getPayload());
 			Logger.getLogger(MessageManager.class.getName()).log(Level.INFO, getLogMessage("Message delivered to client [%s], topic [%s], data [\n%s\n]", token.getClient(), Arrays.toString(token.getTopics()), buffer.toString()));
 
-			Context context = new Context(Context.Action.DELIVERY_COMPLETED, null, null);
-
-			for (RuleAction rule : rules) {
-				if (rule.predicate(context)) {
-					rule.run(context);
-				}
-			}
+			context.initDeliveryCompleted();
+			evalRules();
 		} catch (MqttException ex) {
 			Logger.getLogger(MessageManager.class.getName()).log(Level.SEVERE, null, ex);
 		}
