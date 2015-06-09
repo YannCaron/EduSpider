@@ -21,14 +21,13 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 /**
- * <p>
- * @author cyann
+ <p>
+ @author cyann
  */
 public class MessageManager implements MqttCallback {
 
 	private final List<RuleAction> rules;
 	private final MqttClient client;
-	private final MqttConnectOptions connOpts;
 	private final Context context;
 
 	public MessageManager(String address, String name) {
@@ -38,13 +37,8 @@ public class MessageManager implements MqttCallback {
 		try {
 
 			// create
-			client = new MqttClient(address, name, new MemoryPersistence());
+			client = new MqttClient(address, name);
 
-			// config
-			connOpts = new MqttConnectOptions();
-			connOpts.setCleanSession(true);
-
-			//mqtt.subscribe(TOPIC_MAIN, QOS_ONCE);
 		} catch (MqttException ex) {
 			Logger.getLogger(MessageManager.class.getName()).log(Level.SEVERE, null, ex);
 			throw new RuntimeException("Cannot create mqtt client", ex);
@@ -60,8 +54,14 @@ public class MessageManager implements MqttCallback {
 	public void connect() {
 		try {
 			Logger.getLogger(MessageManager.class.getName()).log(Level.INFO, getLogMessage("Connecting to broker [%s]", client.getServerURI()));
-			client.connect(connOpts);
+
 			client.setCallback(this);
+			
+			// config
+			MqttConnectOptions connOpts = new MqttConnectOptions();
+			connOpts.setCleanSession(true);
+
+			client.connect(connOpts);
 			Logger.getLogger(MessageManager.class.getName()).log(Level.INFO, getLogMessage("Connected"));
 		} catch (MqttException ex) {
 			Logger.getLogger(MessageManager.class.getName()).log(Level.SEVERE, null, ex);
@@ -86,7 +86,7 @@ public class MessageManager implements MqttCallback {
 		ByteBuffer buffer = new ByteBuffer();
 		message.generate(buffer);
 		try {
-			client.publish(topic, buffer.toArray(), 2, true);
+			client.publish(topic, buffer.toArray(), 0, true);
 			Logger.getLogger(MessageManager.class.getName()).log(Level.INFO, getLogMessage("Message sent, topic [%s], data [\n%s\n]", topic, buffer.toString()));
 		} catch (MqttException ex) {
 			Logger.getLogger(MessageManager.class.getName()).log(Level.SEVERE, getLogMessage("Cannot publish message on topic [%s], data [\n%s\n]", topic, buffer.toString()), ex);
@@ -122,15 +122,10 @@ public class MessageManager implements MqttCallback {
 
 	@Override
 	public void deliveryComplete(IMqttDeliveryToken token) {
-		try {
-			ByteBuffer buffer = new ByteBuffer(token.getMessage().getPayload());
-			Logger.getLogger(MessageManager.class.getName()).log(Level.INFO, getLogMessage("Message delivered to client [%s], topic [%s], data [\n%s\n]", token.getClient(), Arrays.toString(token.getTopics()), buffer.toString()));
+		Logger.getLogger(MessageManager.class.getName()).log(Level.INFO, getLogMessage("Message delivered to client [%s], topic [%s]", token.getClient(), Arrays.toString(token.getTopics())));
 
-			context.initDeliveryCompleted();
-			evalRules();
-		} catch (MqttException ex) {
-			Logger.getLogger(MessageManager.class.getName()).log(Level.SEVERE, null, ex);
-		}
+		context.initDeliveryCompleted();
+		evalRules();
 	}
 
 }

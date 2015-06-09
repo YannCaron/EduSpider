@@ -20,77 +20,38 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
  * and open the template in the editor.
  */
 /**
- * <p>
- * @author cyann
+ <p>
+ @author cyann
  */
-public class ESManager implements Constant, MqttCallback {
+public class ESManager implements Constant {
 
 	public void run() throws MqttException, InterruptedException {
 		Manager manager = new Manager();
 		manager.start();
 
-		MessageManager spider = new MessageManager(BROKER, "spider");
-		spider.
-
-
-		String broker = "tcp://localhost:1883";
-
-		MqttClient client = new MqttClient(broker, "spider", new MemoryPersistence());
-		MqttConnectOptions connOpts = new MqttConnectOptions();
-		connOpts.setCleanSession(true);
-		System.out.println("EMITTER Connecting to broker: " + broker);
-		client.connect(connOpts);
-		System.out.println("EMITTER Connected");
-
-		client.subscribe(TOPIC_MAIN);
+		MessageManager spider = new MessageManager(BROKER, "spider2");
+		spider.connect();
+		spider.subscribe(TOPIC_MAIN);
 
 		String topic = "myTopic";
-		client.subscribe(topic);
 
-		// create command
-		/*Message command = new Message(255, new Command(Command.Types.MOVE_FRONT));
-		 command.addAttribute(new BooleanAttribute(true));
-		 command.addAttribute(new IntegerAttribute(7));
-		 command.addAttribute(new CharAttribute('a'));
-		 command.addAttribute(new IntegerArrayAttribute(new int[]{
-		 1, 2, 3, 4
-		 }));
-		 command.addAttribute(new StringAttribute("Hi mqtt!"));*/
 		Message message = new Message(new Identication(Identication.Types.REGISTER));
 		message.addAttribute(new StringAttribute("AL_%d"));
 		message.addAttribute(new StringAttribute(topic));
 
-		ByteBuffer buffer = new ByteBuffer();
-		message.generate(buffer);
+		spider.publish(TOPIC_MAIN, message);
 
-		client.publish(TOPIC_MAIN, buffer.toArray(), 2, false);
-		System.out.println("EMITTER Message sent " + TOPIC_MAIN + ":\n" + buffer.toString() + "\n");
-
-		while (true) {
+		//while (true) {
 			synchronized (this) {
 				this.wait(250);
 			}
-		}
+		//}
 
-		//System.exit(0);
+		System.exit(0);
 	}
 
 	public static void main(String[] args) throws MqttException, InterruptedException {
 		new ESManager().run();
-	}
-
-	@Override
-	public void connectionLost(Throwable cause) {
-		cause.printStackTrace();
-	}
-
-	@Override
-	public void messageArrived(String topic, MqttMessage message) throws Exception {
-		System.out.println("MESSAGE RECEIVED");
-	}
-
-	@Override
-	public void deliveryComplete(IMqttDeliveryToken token) {
 	}
 
 }

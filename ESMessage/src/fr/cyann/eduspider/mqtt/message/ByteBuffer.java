@@ -5,6 +5,7 @@
  */
 package fr.cyann.eduspider.mqtt.message;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,17 +86,17 @@ public class ByteBuffer {
 			buffer.add(b);
 		}
 	}
-	
+
 	public String getString(int start, int length) {
 		byte[] values = new byte[length];
-		
+
 		for (int i = 0; i < length; i++) {
 			values[i] = buffer.get(start + i);
 		}
-		
+
 		return new String(values);
 	}
-	
+
 	public byte[] toArray() {
 		int size = buffer.size();
 		byte[] bytes = new byte[size];
@@ -111,25 +112,42 @@ public class ByteBuffer {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
+		StringBuilder ascii = new StringBuilder();
+		StringBuilder hexa = new StringBuilder();
 		int size = buffer.size();
 		for (int j = 0; j < size; j++) {
 			if (j != 0) {
 				if (j % 16 == 0) {
-					sb.append("\n");
+					hexa.append(" | ");
+					hexa.append(ascii);
+					hexa.append("\n");
+					ascii.delete(0, ascii.length());
 				} else if (j % 8 == 0) {
-					sb.append("  ");
+					hexa.append("  ");
+					ascii.append("  ");
 				} else {
-					sb.append(" ");
+					hexa.append(" ");
 				}
 
 			}
 			int v = buffer.get(j) & 0xFF;
-			sb.append(hexArray[v >>> 4]);
-			sb.append(hexArray[v & 0x0F]);
+			hexa.append(hexArray[v >>> 4]);
+			hexa.append(hexArray[v & 0x0F]);
+
+			char c = (char) (buffer.get(j) & 0x00FF);
+			if (c < 0x32) {
+				ascii.append('.');
+			} else {
+				ascii.append(c);
+			}
 		}
 
-		return sb.toString();
+		for (int i = size % 16; i < 16; i++) hexa.append("   ");
+		
+		hexa.append(" | ");
+		hexa.append(ascii);
+
+		return hexa.toString();
 	}
 
 	public static String byteToString(byte b) {
